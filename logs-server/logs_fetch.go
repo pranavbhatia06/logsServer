@@ -15,7 +15,8 @@ func GetLogs(c *gin.Context) {
 	r := c.Request
 	w := c.Writer
 	appName := r.URL.Query().Get("appName")
-	logs, err := getLogs(appName)
+	devstackLabel := r.URL.Query().Get("devstackLabel")
+	logs, err := getLogs(appName, devstackLabel)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Failed to retrieve logs", http.StatusInternalServerError)

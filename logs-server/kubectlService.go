@@ -8,9 +8,7 @@ import (
 	"strings"
 )
 
-const devstackLabel = "hdfc-test"
-
-func getPods(appName string) ([]string, error) {
+func getPods(appName string, devstackLabel string) ([]string, error) {
 	podsNames := make([]string, 0)
 
 	command := fmt.Sprintf("kubectl get pods -n %s | grep %s", appName, devstackLabel)
@@ -43,10 +41,13 @@ func getPods(appName string) ([]string, error) {
 	return podsNames, nil
 }
 
-func getLogs(appName string) ([]string, error) {
-	pods, err := getPods(appName)
+func getLogs(appName string, devStackLabel string) ([]string, error) {
+	pods, err := getPods(appName, devStackLabel)
 	if err != nil {
 		return nil, err
+	}
+	if len(pods) == 0 {
+		return nil, fmt.Errorf("unable to find pods for service %s", appName)
 	}
 
 	logs := make([]string, 0)
@@ -56,7 +57,7 @@ func getLogs(appName string) ([]string, error) {
 			continue
 		}
 
-		command := fmt.Sprintf("kubectl logs %s -n %s", pod, appName)
+		command := fmt.Sprintf("kubectl logs -l devstack_label=%s -n %s", devStackLabel, appName)
 		cmd := exec.Command("bash", "-c", command)
 		stdout, err := cmd.Output()
 		if err != nil {
