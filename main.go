@@ -8,7 +8,7 @@ import (
 func main() {
 	r := gin.Default()
 
-	r.GET("/hello", logs_server.HelloController)
+	r.POST("/logs", logs_server.GetLogs)
 
 	r.Run() // Start the server
 }
