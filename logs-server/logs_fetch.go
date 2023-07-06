@@ -2,7 +2,7 @@ package logs_server
 
 import (
 	"encoding/json"
-	"github.com/gin-gonic/gin"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -11,9 +11,9 @@ import (
 //	c.JSON(200, gin.H{"message": "Hello, World!"})
 //}
 
-func GetLogs(c *gin.Context) {
-	r := c.Request
-	w := c.Writer
+func GetLogs(w http.ResponseWriter, r *http.Request) {
+	//r := c.Request
+	//w := c.Writer
 	appName := r.URL.Query().Get("appName")
 	devstackLabel := r.URL.Query().Get("devstackLabel")
 	logs, err := getLogs(appName, devstackLabel)
@@ -23,10 +23,11 @@ func GetLogs(c *gin.Context) {
 		return
 	}
 	response := struct {
-		Logs []string `json:"logs"`
+		Logs []interface{} `json:"logs"`
 	}{
 		Logs: logs,
 	}
+	fmt.Println(response)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
